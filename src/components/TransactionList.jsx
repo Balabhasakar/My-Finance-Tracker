@@ -52,12 +52,12 @@ const TransactionList = ({ transactions = [], onTransactionDeleted, onEditClick,
     <div style={{ marginTop: "20px" }}>
       <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
         <input 
-          type="text" placeholder="Search transactions..." value={searchTerm} 
+          type="text" placeholder="Search..." value={searchTerm} 
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ 
             flex: 2, padding: "12px", borderRadius: "10px", border: "1px solid #ddd", 
             background: darkMode ? "#2d3748" : "#fff", color: darkMode ? "#fff" : "#000",
-            outline: "none"
+            outline: "none", width: '100%'
           }}
         />
         <select 
@@ -66,10 +66,10 @@ const TransactionList = ({ transactions = [], onTransactionDeleted, onEditClick,
           style={{ 
             flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #ddd", 
             background: darkMode ? "#2d3748" : "#fff", color: darkMode ? "#fff" : "#000",
-            cursor: "pointer"
+            cursor: "pointer", width: '100%'
           }}
         >
-          <option value="All">All Categories</option>
+          <option value="All">All</option>
           <option value="Food">Food</option>
           <option value="Transport">Transport</option>
           <option value="Housing">Housing</option>
@@ -93,35 +93,49 @@ const TransactionList = ({ transactions = [], onTransactionDeleted, onEditClick,
               return (
                 <li key={t.id} style={{ 
                   display: "flex", justifyContent: "space-between", alignItems: "center",
-                  background: darkMode ? "#2d3748" : "#fff", padding: "15px", margin: "12px 0", borderRadius: "12px",
+                  background: darkMode ? "#2d3748" : "#fff", padding: "12px", margin: "10px 0", borderRadius: "12px",
                   borderLeft: `6px solid ${isIncome ? '#38a169' : '#e53e3e'}`,
                   boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                  transition: "transform 0.2s"
+                  gap: "10px" // 🚀 Prevents items from touching
                 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
                     <span className="material-symbols-outlined" style={{ 
-                      fontSize: '24px', 
+                      fontSize: '20px', 
                       color: isIncome ? '#38a169' : '#e53e3e',
                       background: isIncome ? '#f0fff4' : '#fff5f5',
-                      padding: '10px', borderRadius: '12px'
+                      padding: '8px', borderRadius: '10px', flexShrink: 0
                     }}>
                       {getIconName(t.category, t.text)}
                     </span>
-                    <div>
-                      <div style={{ fontWeight: "700", color: darkMode ? "#fff" : "#2d3748", fontSize: "15px" }}>{t.text}</div>
-                      <div style={{ fontSize: "11px", color: "#718096", marginTop: "2px" }}>
-                        {t.category} • {formatDate(t.createdAt)}
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ 
+                        fontWeight: "700", 
+                        color: darkMode ? "#fff" : "#2d3748", 
+                        fontSize: "14px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis" // 🚀 Cuts long text with "..."
+                      }}>
+                        {t.text}
+                      </div>
+                      <div style={{ fontSize: "10px", color: "#718096" }}>
+                        {t.category}
                       </div>
                     </div>
                   </div>
                   
-                  <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-                    <span style={{ fontWeight: "800", color: isIncome ? "#38a169" : "#e53e3e", fontSize: '15px' }}>
+                  <div style={{ display: "flex", gap: "10px", alignItems: "center", flexShrink: 0 }}>
+                    <span style={{ 
+                      fontWeight: "800", 
+                      color: isIncome ? "#38a169" : "#e53e3e", 
+                      fontSize: '13px', // 🚀 Smaller font for mobile
+                      whiteSpace: 'nowrap' 
+                    }}>
                       {isIncome ? `+$${Number(t.amount).toFixed(2)}` : `-$${Math.abs(t.amount).toFixed(2)}`}
                     </span>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button onClick={() => onEditClick(t)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: '18px', opacity: 0.7 }}>✏️</button>
-                      <button onClick={() => handleDelete(t.id)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: '18px', opacity: 0.7 }}>🗑️</button>
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      <button onClick={() => onEditClick(t)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: '16px' }}>✏️</button>
+                      <button onClick={() => handleDelete(t.id)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: '16px' }}>🗑️</button>
                     </div>
                   </div>
                 </li>
@@ -130,16 +144,13 @@ const TransactionList = ({ transactions = [], onTransactionDeleted, onEditClick,
           </ul>
 
           {hasMore && (
-            <div style={{ textAlign: 'center', marginTop: '25px', marginBottom: '20px' }}>
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
                <button 
                  onClick={onLoadMore}
                  style={{
-                   padding: '12px 35px', borderRadius: '30px', border: '2px solid #3182ce',
-                   background: 'transparent', color: '#3182ce', cursor: 'pointer', fontWeight: 'bold',
-                   transition: '0.2s'
+                   padding: '10px 25px', borderRadius: '30px', border: '2px solid #3182ce',
+                   background: 'transparent', color: '#3182ce', cursor: 'pointer', fontWeight: 'bold'
                  }}
-                 onMouseOver={(e) => { e.target.style.background = '#3182ce'; e.target.style.color = 'white'; }}
-                 onMouseOut={(e) => { e.target.style.background = 'transparent'; e.target.style.color = '#3182ce'; }}
                >
                  Load More
                </button>
