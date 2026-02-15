@@ -6,18 +6,31 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Log requests to see the limit and offset in action
+// Log requests
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './database.sqlite' 
-});
+// 🚀 SMART DATABASE CONNECTION
+// If DATABASE_URL exists (Production/Render), use Postgres. Else, use SQLite.
+const sequelize = process.env.DATABASE_URL 
+  ? new Sequelize(process.env.DATABASE_URL, {
+      dialect: 'postgres',
+      protocol: 'postgres',
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false // Required for Render/Supabase
+        }
+      }
+    })
+  : new Sequelize({
+      dialect: 'sqlite',
+      storage: './database.sqlite' 
+    });
 
-// 🚀 SCHEMA: text, amount, userId, category, and notes
+// 🚀 SCHEMA
 const Transaction = sequelize.define('Transaction', {
   text: { type: DataTypes.STRING, allowNull: false },
   amount: { type: DataTypes.FLOAT, allowNull: false },
@@ -28,22 +41,20 @@ const Transaction = sequelize.define('Transaction', {
 
 sequelize.sync().then(() => console.log("✅ Database Synced"));
 
-// 🚀 UPDATED: GET route with Pagination (Limit & Offset)
+// --- API ROUTES ---
+
 app.get('/api/transactions/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    
-    // Read limit and offset from query parameters (e.g., ?limit=5&offset=0)
     const limit = parseInt(req.query.limit) || 5; 
     const offset = parseInt(req.query.offset) || 0;
 
     const transactions = await Transaction.findAll({ 
       where: { userId },
       order: [['createdAt', 'DESC']],
-      limit: limit,   // 🛑 Only fetch this many items
-      offset: offset  // ⏩ Skip this many items
+      limit: limit,
+      offset: offset
     });
-    
     res.json(transactions);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -51,7 +62,6 @@ app.get('/api/transactions/:userId', async (req, res) => {
 });
 
 app.post('/api/transactions', async (req, res) => {
-  console.log("📥 Backend Received:", req.body);
   try {
     const newTransaction = await Transaction.create(req.body);
     res.json(newTransaction);
@@ -84,4 +94,6 @@ app.delete('/api/transactions/:id', async (req, res) => {
   }
 });
 
-app.listen(5000, () => console.log("🚀 Server running on http://localhost:5000"));
+// 🚀 DYNAMIC PORT FOR DEPLOYMENT
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
