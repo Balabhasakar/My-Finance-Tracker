@@ -17,13 +17,12 @@ const TransactionForm = ({ onTransactionAdded, editData, setEditData }) => {
     }
   }, [editData]);
 
-  // 🚀 SMART TOGGLE: Updates type AND auto-selects category
   const handleTypeChange = (selectedType) => {
     setType(selectedType);
     if (selectedType === "income") {
-      setCategory("Salary"); // Auto-switch to Salary for Income
+      setCategory("Salary");
     } else {
-      setCategory("Food");   // Auto-switch to Food for Expense
+      setCategory("Food");
     }
   };
 
@@ -35,8 +34,8 @@ const TransactionForm = ({ onTransactionAdded, editData, setEditData }) => {
 
     const method = editData ? "PUT" : "POST";
     const url = editData 
-      ? `http://localhost:5000/api/transactions/${editData.id}` 
-      : "http://localhost:5000/api/transactions";
+      ? `${import.meta.env.VITE_API_URL}/transactions/${editData.id}` 
+      : `${import.meta.env.VITE_API_URL}/transactions`;
 
     try {
       const response = await fetch(url, {
@@ -63,7 +62,6 @@ const TransactionForm = ({ onTransactionAdded, editData, setEditData }) => {
 
   return (
     <div style={{ marginBottom: '20px' }}>
-      {/* 🚀 Updated Type Selector Toggles */}
       <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
         <button 
           type="button"

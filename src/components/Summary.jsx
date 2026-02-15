@@ -5,14 +5,14 @@ import SpendingChart from "./SpendingChart";
 const Summary = ({ refreshTrigger, darkMode }) => {
   const [totals, setTotals] = useState({ balance: 0, income: 0, expense: 0 });
   const [categoryTotals, setCategoryTotals] = useState({});
-  const [showChart, setShowChart] = useState(false); // 🚀 State to toggle chart
+  const [showChart, setShowChart] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchTotals = async () => {
       if (!user) return;
       try {
-        const response = await fetch(`http://localhost:5000/api/transactions/${user.uid}?limit=1000`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/transactions/${user.uid}?limit=1000`);
         const transactions = await response.json();
 
         let inc = 0;
@@ -51,26 +51,15 @@ const Summary = ({ refreshTrigger, darkMode }) => {
     categoryContainer: { marginTop: "20px", background: darkMode ? "#2d3748" : "#fff", padding: "20px", borderRadius: "15px", boxShadow: "0 4px 6px rgba(0,0,0,0.1)" },
     categoryRow: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: darkMode ? "1px solid #4a5568" : "1px solid #edf2f7" },
     toggleBtn: {
-      width: "100%",
-      padding: "10px",
-      marginTop: "15px",
-      borderRadius: "10px",
-      border: "none",
-      backgroundColor: darkMode ? "#4a5568" : "#edf2f7",
-      color: darkMode ? "#fff" : "#2d3748",
-      fontWeight: "bold",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: "8px",
-      transition: "0.3s"
+      width: "100%", padding: "10px", marginTop: "15px", borderRadius: "10px", border: "none", 
+      backgroundColor: darkMode ? "#4a5568" : "#edf2f7", color: darkMode ? "#fff" : "#2d3748",
+      fontWeight: "bold", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+      gap: "8px", transition: "0.3s"
     }
   };
 
   return (
     <div>
-      {/* 💳 Top Summary Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", margin: "20px 0", textAlign: "center" }}>
         <div style={styles.balanceBox}>
           <h4 style={{ margin: 0, color: "#3182ce", fontSize: "10px", fontWeight: "800" }}>BALANCE</h4>
@@ -88,18 +77,13 @@ const Summary = ({ refreshTrigger, darkMode }) => {
         </div>
       </div>
 
-      {/* 🚀 TOGGLE BUTTON */}
-      <button 
-        style={styles.toggleBtn} 
-        onClick={() => setShowChart(!showChart)}
-      >
+      <button style={styles.toggleBtn} onClick={() => setShowChart(!showChart)}>
         <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
           {showChart ? "visibility_off" : "pie_chart"}
         </span>
         {showChart ? "Hide Analytics" : "Show Spending Chart"}
       </button>
 
-      {/* 📊 CONDITIONALLY RENDER CHART OR LIST */}
       {showChart ? (
         <div style={{ animation: "fadeIn 0.5s" }}>
           <SpendingChart categoryTotals={categoryTotals} darkMode={darkMode} />

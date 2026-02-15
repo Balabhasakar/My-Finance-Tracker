@@ -4,13 +4,11 @@ const TransactionList = ({ transactions = [], onTransactionDeleted, onEditClick,
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  // 🧠 Smarter Icon Brain: Prioritizes Category, then checks Description
   const getIconName = (category, text) => {
     const cat = category?.toLowerCase() || "";
     const desc = text?.toLowerCase() || "";
     const combined = `${cat} ${desc}`;
 
-    // Priority 1: Direct Category Matches
     if (cat === "salary") return "payments";
     if (cat === "housing") return "home";
     if (cat === "transport") return "local_gas_station";
@@ -18,7 +16,6 @@ const TransactionList = ({ transactions = [], onTransactionDeleted, onEditClick,
     if (cat === "dairy") return "water_drop";
     if (cat === "food") return "restaurant";
 
-    // Priority 2: Keyword Fallbacks
     if (combined.includes("hike") || combined.includes("bonus") || combined.includes("income")) return "payments";
     if (combined.includes("rent") || combined.includes("house")) return "home";
     if (combined.includes("gym") || combined.includes("fitness") || combined.includes("workout")) return "fitness_center";
@@ -37,7 +34,6 @@ const TransactionList = ({ transactions = [], onTransactionDeleted, onEditClick,
     });
   };
 
-  // 🔍 Filter Logic
   const filteredTransactions = transactions?.filter((t) => {
     const matchesSearch = t.text?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "All" || t.category === selectedCategory;
@@ -47,14 +43,13 @@ const TransactionList = ({ transactions = [], onTransactionDeleted, onEditClick,
   const handleDelete = async (id) => {
     if (!id || !window.confirm("Delete this transaction?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/transactions/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/transactions/${id}`, { method: 'DELETE' });
       if (res.ok) onTransactionDeleted();
     } catch (err) { console.error(err); }
   };
 
   return (
     <div style={{ marginTop: "20px" }}>
-      {/* 🔍 Search & Filter UI */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
         <input 
           type="text" placeholder="Search transactions..." value={searchTerm} 
@@ -134,7 +129,6 @@ const TransactionList = ({ transactions = [], onTransactionDeleted, onEditClick,
             })}
           </ul>
 
-          {/* 🔘 LOAD MORE BUTTON */}
           {hasMore && (
             <div style={{ textAlign: 'center', marginTop: '25px', marginBottom: '20px' }}>
                <button 
